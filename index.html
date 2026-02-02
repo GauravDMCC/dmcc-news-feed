@@ -81,7 +81,7 @@
     function stripHtml(html) {
       const div = document.createElement("div");
       div.innerHTML = html || "";
-      return (div.textContent || div.innerText || "").replace(/\s+/g," ").trim();
+      return (div.textContent || div.innerText || "").replace(/\s+/g, " ").trim();
     }
 
     function firstImageFromHtml(html) {
@@ -93,33 +93,38 @@
       if (!pubDate) return "";
       const d = new Date(pubDate);
       if (isNaN(d.getTime())) return pubDate;
-      return d.toLocaleString(undefined, { year:"numeric", month:"long", day:"2-digit" });
+      return d.toLocaleString(undefined, { year: "numeric", month: "long", day: "2-digit" });
     }
 
     fetch(API)
       .then(r => r.json())
       .then(data => {
         const items = (data.items || []).slice(0, 8);
+
         if (!items.length) {
           document.getElementById("feed").textContent = "No items found.";
           return;
         }
 
         const html = items.map(it => {
-          // rss2json may put HTML inside "description"
-          const descHtml = decodeHtmlEntities(it.description || "");
+          // ✅ Fallback: some feeds put text in content instead of description
+          const descHtml = decodeHtmlEntities(it.description || it.content || "");
+
+          // Extract first image (if present)
           const img = firstImageFromHtml(descHtml);
 
-          // plain text preview
+          // Plain text preview
           const text = stripHtml(descHtml);
           const preview = text.length > 340 ? (text.slice(0, 340) + "…") : text;
 
           return `
             <div class="item">
               <div class="media">
-                ${img ? `<a href="${it.link}" target="_blank" rel="noopener">
-                          <img src="${img}" alt="">
-                        </a>` : ``}
+                ${img ? `
+                  <a href="${it.link}" target="_blank" rel="noopener">
+                    <img src="${img}" alt="">
+                  </a>
+                ` : ``}
               </div>
 
               <div class="content">
@@ -127,7 +132,9 @@
                   <a href="${it.link}" target="_blank" rel="noopener">${it.title}</a>
                 </div>
                 <div class="meta">${formatDate(it.pubDate)}</div>
-                <div class="desc">${preview}</div>
+
+                <!-- ✅ Only render description if there is actual text -->
+                ${preview ? `<div class="desc">${preview}</div>` : ``}
               </div>
             </div>
           `;
