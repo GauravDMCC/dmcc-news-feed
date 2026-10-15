@@ -24,33 +24,13 @@
       border-bottom: 1px solid var(--border);
       align-items: start;
     }
-    .media img {
-      width: 100%;
-      height: auto;
-      border-radius: 6px;
-      display: block;
-    }
-    .title {
-      font-size: 18px;
-      font-weight: 700;
-      margin: 0 0 8px;
-      line-height: 1.25;
-    }
+    .media img { width: 100%; height: auto; border-radius: 6px; display: block; }
+    .title { font-size: 18px; font-weight: 700; margin: 0 0 8px; line-height: 1.25; }
     .title a { color: var(--text); text-decoration: none; }
     .title a:hover { text-decoration: underline; }
+    .meta { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .desc { font-size: 13px; line-height: 1.5; color: #222; }
 
-    .meta {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-    .desc {
-      font-size: 13px;
-      line-height: 1.5;
-      color: #222;
-    }
-
-    /* Make it responsive for smaller iframe widths */
     @media (max-width: 820px) {
       .item { grid-template-columns: 1fr; }
       .media { order: 1; }
@@ -66,86 +46,59 @@
   </div>
 
   <script>
-    // ✅ Put your RSS URL here
-    const RSS_URL = "https://dmcc.ae/latest-news/rss.xml";
+    // news.json is rebuilt hourly by .github/workflows/update-news.yml
+    const MAX_ITEMS = 8;
 
-    // Uses a public RSS->JSON converter to avoid browser CORS problems.
-    const API = "https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(RSS_URL);
-
-    function decodeHtmlEntities(s) {
-      const txt = document.createElement("textarea");
-      txt.innerHTML = s || "";
-      return txt.value;
+    function esc(s) {
+      return String(s == null ? "" : s)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    function stripHtml(html) {
-      const div = document.createElement("div");
-      div.innerHTML = html || "";
-      return (div.textContent || div.innerText || "").replace(/\s+/g, " ").trim();
+    function safeUrl(u) {
+      return /^https?:\/\//i.test(u || "") ? u : "";
     }
 
-    function firstImageFromHtml(html) {
-      const m = /<img[^>]+src=["']([^"']+)["']/i.exec(html || "");
-      return m ? m[1] : "";
+    function formatDate(iso) {
+      if (!iso) return "";
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return "";
+      return d.toLocaleDateString("en-GB", { year: "numeric", month: "long", day: "2-digit" });
     }
 
-    function formatDate(pubDate) {
-      if (!pubDate) return "";
-      const d = new Date(pubDate);
-      if (isNaN(d.getTime())) return pubDate;
-      return d.toLocaleString(undefined, { year: "numeric", month: "long", day: "2-digit" });
-    }
+    const feed = document.getElementById("feed");
 
-    fetch(API)
-      .then(r => r.json())
+    fetch("news.json?ts=" + Date.now())
+      .then(r => {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      })
       .then(data => {
-        const items = (data.items || []).slice(0, 8);
-
+        const items = (data.items || []).slice(0, MAX_ITEMS);
         if (!items.length) {
-          document.getElementById("feed").textContent = "No items found.";
+          feed.textContent = "No items found.";
           return;
         }
 
-        const html = items.map(it => {
-          // ✅ Fallback: some feeds put text in content instead of description
-          const descHtml = decodeHtmlEntities(it.description || it.content || "");
-
-          // Extract first image (if present)
-          const img = firstImageFromHtml(descHtml);
-
-          // Plain text preview
-          const text = stripHtml(descHtml);
-          const preview = text.length > 340 ? (text.slice(0, 340) + "…") : text;
-
+        feed.innerHTML = items.map(it => {
+          const link = safeUrl(it.link);
+          const img = safeUrl(it.image);
           return `
             <div class="item">
               <div class="media">
-                ${img ? `
-                  <a href="${it.link}" target="_blank" rel="noopener">
-                    <img src="${img}" alt="">
-                  </a>
-                ` : ``}
+                ${img ? `<a href="${esc(link)}" target="_blank" rel="noopener"><img src="${esc(img)}" alt="" loading="lazy"></a>` : ``}
               </div>
-
               <div class="content">
-                <div class="title">
-                  <a href="${it.link}" target="_blank" rel="noopener">${it.title}</a>
-                </div>
-                <div class="meta">${formatDate(it.pubDate)}</div>
-
-                <!-- ✅ Only render description if there is actual text -->
-                ${preview ? `<div class="desc">${preview}</div>` : ``}
+                <div class="title"><a href="${esc(link)}" target="_blank" rel="noopener">${esc(it.title)}</a></div>
+                <div class="meta">${esc(formatDate(it.date))}</div>
+                ${it.description ? `<div class="desc">${esc(it.description)}</div>` : ``}
               </div>
-            </div>
-          `;
+            </div>`;
         }).join("");
-
-        document.getElementById("feed").innerHTML = html;
       })
       .catch(err => {
         console.error(err);
-        document.getElementById("feed").textContent =
-          "Failed to load feed. (If this happens, we’ll swap the RSS->JSON service or use a server-side proxy.)";
+        feed.textContent = "Failed to load news. Please try again later.";
       });
   </script>
 </body>
