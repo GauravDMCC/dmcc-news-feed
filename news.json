@@ -1,7 +1,14 @@
 {
-  "updated": "2026-11-05T03:14:42.126647+00:00",
+  "updated": "2026-11-05T11:55:49.939397+00:00",
   "source": "https://dmcc.ae/latest-news/rss.xml",
   "items": [
+    {
+      "title": "DMCC to Host Tenth Edition of UAE AeroPress Championship, Celebrating the UAE's Coffee Community",
+      "link": "https://dmcc.ae/latest-news/dmcc-to-host-tenth-edition-of-uae-aeropress-championship-celebrating-the-uaes-coffee-community",
+      "date": "2026-11-05T05:25:55+00:00",
+      "image": "https://dmcc.ae/hubfs/DMCC%20News%20-%202026/Aeropress%20Championship%20-%205%20November%202026/HERO.jpg",
+      "description": "DMCC to host landmark tenth edition of the UAE AeroPress Championship at Almas Tower from 12-14 November Championship to bring together 252 competitors from across the seven emirates under the theme “United and Strong” Event underscores DMCC's continued commitment to advancing Dubai's coffee ecosystem and strengthening the emirate's posit…"
+    },
     {
       "title": "DMCC Signs Agreement with Waitrose to Bring the Premium Grocery Retailer to Uptown Dubai",
       "link": "https://dmcc.ae/latest-news/dmcc-signs-agreement-with-waitrose-to-bring-the-premium-grocery-retailer-to-uptown-dubai",
@@ -64,13 +71,6 @@
       "date": "2026-09-10T13:20:11+00:00",
       "image": "https://dmcc.ae/hubfs/DMCC%20News%20-%202026/BRICS%20WBA%20UAE%20Chapter%20-%2010%20Sep%202026/DMCC%20BRICS%20News-1.png",
       "description": "UAE Chapter of the BRICS Women’s Business Alliance (WBA) advances delivery-focused agenda for women’s economic participation at New Delhi summit Discussions focus on practical initiatives for women’s participation across key growth sectors, spanning finance, technology, healthcare, tourism, creative industries and food security BRICS WBA…"
-    },
-    {
-      "title": "First Tokenised Commodity Asset Launched Under DMCC-VARA Framework with World-Record Silver Bar",
-      "link": "https://dmcc.ae/latest-news/first-tokenised-commodity-asset-launched-under-dmcc-vara-framework-with-world-record-silver-bar",
-      "date": "2026-09-07T09:49:40+00:00",
-      "image": "https://dmcc.ae/hubfs/HERO%20IMAGE%20ABS%20(2).jpg",
-      "description": "World’s largest silver bar becomes first tokenised commodity asset launched under DMCC-VARA tokenisation framework, marking major milestone for Dubai’s real-world asset economy 1,971kg Guinness World Record bar manufactured in UAE by SAM Precious Metals to commemorate nation’s 1971 founding year VARA-regulated Tokinvest to issue fractiona…"
     }
   ]
 }
